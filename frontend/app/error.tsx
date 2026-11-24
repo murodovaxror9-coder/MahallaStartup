@@ -2,16 +2,14 @@
 
 export default function GlobalError({ reset }: { error: Error; reset: () => void }) {
   return (
-    <div className="auth-shell">
-      <div className="auth-card">
+    <main className="login-wrap">
+      <div className="card login-card stack">
         <h1>Xatolik yuz berdi</h1>
-        <p className="muted">Sahifani yuklab bo&apos;lmadi. Qayta urinib ko&apos;ring.</p>
-        <p>
-          <button type="button" className="btn btn-primary" onClick={reset}>
-            Qayta urinish
-          </button>
-        </p>
+        <p className="muted">Sahifani yuklab bo‘lmadi. Qayta urinib ko‘ring.</p>
+        <button type="button" className="btn btn-primary" onClick={reset}>
+          Qayta urinish
+        </button>
       </div>
-    </div>
+    </main>
   );
 }
