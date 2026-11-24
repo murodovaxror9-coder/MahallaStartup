@@ -1,56 +1,58 @@
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, Pressable } from 'react-native';
-import { Button } from '@/components/Button';
-import { EmptyState } from '@/components/EmptyState';
-import { Pill } from '@/components/Pill';
-import { Screen } from '@/components/Screen';
-import { Text } from '@/components/Text';
-import { formatDate } from '@/lib/format';
+import { useState } from 'react';
+import { ActivityIndicator, FlatList, RefreshControl, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BottomNav } from '@/components/BottomNav';
+import { AnnouncementCard } from '@/components/AnnouncementCard';
+import { EmptyState, ErrorState } from '@/components/EmptyState';
+import { Header, Skeleton } from '@/components/ui';
 import { usePagedList } from '@/lib/hooks';
 import type { AnnouncementItem } from '@/lib/types';
-import { useTheme } from '@/theme';
+import { C } from '@/theme';
 
 // API: GET /announcements?cursor
 export default function AnnouncementsScreen() {
   const router = useRouter();
-  const { colors, spacing, radius } = useTheme();
-  const { items, loading, loadingMore, error, hasMore, reload, loadMore } = usePagedList<AnnouncementItem>(
-    '/announcements',
-  );
+  const insets = useSafeAreaInsets();
+  const { items, loading, loadingMore, error, hasMore, reload, loadMore } = usePagedList<AnnouncementItem>('/announcements');
+  const [refreshing, setRefreshing] = useState(false);
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
-      {error ? (
-        <Text style={{ color: colors.danger }}>{error}</Text>
-      ) : loading ? (
-        <ActivityIndicator color={colors.primary} />
-      ) : items.length === 0 ? (
-        <EmptyState title="E'lonlar yo'q" hint="Mahalla e'lonlari shu yerda ko'rinadi." />
+    <View style={{ flex: 1, backgroundColor: C.bg, paddingTop: insets.top }}>
+      <Header back title="E’lonlar" />
+      {error && items.length === 0 ? (
+        <ErrorState message={error} onRetry={reload} />
+      ) : loading && items.length === 0 ? (
+        <View style={{ padding: 16 }}>
+          <Skeleton count={3} height={120} />
+        </View>
       ) : (
-        items.map((a) => (
-          <Pressable
-            key={a.id}
-            onPress={() => router.push(`/announcements/${a.id}`)}
-            style={({ pressed }) => ({
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderWidth: 1,
-              borderRadius: radius.md,
-              padding: spacing.md,
-              gap: spacing.xs,
-              opacity: pressed ? 0.7 : 1,
-            })}
-          >
-            {a.isImportant ? <Pill label="Muhim" tone="warning" /> : null}
-            <Text variant="heading">{a.title}</Text>
-            <Text variant="muted">{a.publishedAt ? formatDate(a.publishedAt) : 'Qoralama'}</Text>
-          </Pressable>
-        ))
+        <FlatList
+          data={items}
+          keyExtractor={(a) => a.id}
+          contentContainerStyle={{ padding: 16, paddingTop: 4, gap: 10, flexGrow: 1 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={async () => {
+                setRefreshing(true);
+                await reload();
+                setRefreshing(false);
+              }}
+              tintColor={C.primary}
+              colors={[C.primary]}
+            />
+          }
+          onEndReached={hasMore ? loadMore : undefined}
+          onEndReachedThreshold={0.4}
+          ListEmptyComponent={<EmptyState icon="Megaphone" title="E’lonlar yo‘q" hint="Mahalla e’lonlari shu yerda ko‘rinadi." />}
+          ListFooterComponent={loadingMore ? <ActivityIndicator color={C.primary} style={{ marginVertical: 12 }} /> : undefined}
+          renderItem={({ item }) => (
+            <AnnouncementCard item={item} onPress={() => router.push(`/announcements/${item.id}`)} preview />
+          )}
+        />
       )}
-
-      {hasMore && !loading ? (
-        <Button title="Yana ko'rsatish" variant="secondary" onPress={loadMore} loading={loadingMore} />
-      ) : null}
-    </Screen>
+      <BottomNav active="home" />
+    </View>
   );
 }

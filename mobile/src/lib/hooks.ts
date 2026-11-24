@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ApiError, api } from './api';
+import { api } from './api';
+import { errorText } from './errors';
 import type { MeData, Page } from './types';
 
-function errorMessage(e: unknown): string {
-  return e instanceof ApiError ? e.message : 'Kutilmagan xato yuz berdi';
-}
+const errorMessage = errorText;
 
 interface ApiState<T> {
   data: T | null;

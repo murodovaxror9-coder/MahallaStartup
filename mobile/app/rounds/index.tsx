@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable } from 'react-native';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { Text } from '@/components/Text';
+import { Header } from '@/components/ui';
 import { Screen } from '@/components/Screen';
 import { formatDate } from '@/lib/format';
 import { usePagedList } from '@/lib/hooks';
@@ -16,7 +17,7 @@ export default function RoundsScreen() {
   const { items, loading, loadingMore, error, hasMore, reload, loadMore } = usePagedList<RoundSummary>('/rounds');
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen nav="profile" header={<Header back title="Ovoz natijalari" />} refreshing={false} onRefresh={reload}>
       {error ? (
         <Text style={{ color: colors.danger }}>{error}</Text>
       ) : loading ? (

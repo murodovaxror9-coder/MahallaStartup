@@ -1,10 +1,10 @@
 import { useRouter } from 'expo-router';
-import { ActivityIndicator } from 'react-native';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { IssueRow } from '@/components/IssueRow';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
+import { Header, Skeleton } from '@/components/ui';
 import { usePagedList } from '@/lib/hooks';
 import type { IssueListItem } from '@/lib/types';
 import { useTheme } from '@/theme';
@@ -18,11 +18,11 @@ export default function MyIssuesScreen() {
   );
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen nav="profile" header={<Header back title="Mening postlarim" />} refreshing={false} onRefresh={reload}>
       {error ? (
         <Text style={{ color: colors.danger }}>{error}</Text>
-      ) : loading ? (
-        <ActivityIndicator color={colors.primary} />
+      ) : loading && items.length === 0 ? (
+        <Skeleton count={3} />
       ) : items.length === 0 ? (
         <EmptyState
           title="Siz hali muammo yubormagansiz"
@@ -37,7 +37,7 @@ export default function MyIssuesScreen() {
       )}
 
       {hasMore && !loading ? (
-        <Button title="Yana ko'rsatish" variant="secondary" onPress={loadMore} loading={loadingMore} />
+        <Button title="Yana ko‘rsatish" variant="secondary" onPress={loadMore} loading={loadingMore} />
       ) : null}
     </Screen>
   );

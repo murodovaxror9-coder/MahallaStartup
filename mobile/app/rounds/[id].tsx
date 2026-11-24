@@ -4,6 +4,7 @@ import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
+import { Header } from '@/components/ui';
 import { formatDate } from '@/lib/format';
 import { useApi } from '@/lib/hooks';
 import type { RoundResult } from '@/lib/types';
@@ -18,7 +19,7 @@ export default function RoundResultScreen() {
 
   if (loading && !result) {
     return (
-      <Screen>
+      <Screen nav="profile" header={<Header back title="Ovoz natijasi" />}>
         <ActivityIndicator color={colors.primary} />
       </Screen>
     );
@@ -26,7 +27,7 @@ export default function RoundResultScreen() {
 
   if (error || !result) {
     return (
-      <Screen>
+      <Screen nav="profile" header={<Header back title="Ovoz natijasi" />}>
         <Text style={{ color: colors.danger }}>{error ?? 'Topilmadi'}</Text>
         <Button title="Qayta urinish" variant="secondary" onPress={reload} />
       </Screen>
@@ -34,7 +35,7 @@ export default function RoundResultScreen() {
   }
 
   return (
-    <Screen refreshing={loading} onRefresh={reload}>
+    <Screen nav="profile" header={<Header back title="Ovoz natijasi" />} refreshing={false} onRefresh={reload}>
       <Text variant="muted">
         {formatDate(result.periodStart)} – {formatDate(result.periodEnd)}
       </Text>

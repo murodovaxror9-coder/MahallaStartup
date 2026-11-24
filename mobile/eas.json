@@ -11,13 +11,17 @@
         "image": "latest"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "http://localhost:3000",
-        "EXPO_PUBLIC_SKIP_AUTH": "true"
+        "EXPO_PUBLIC_API_URL": "https://frontend-production-8907b1e6.up.railway.app",
+        "EXPO_PUBLIC_SKIP_AUTH": "false"
       }
     },
     "production": {
       "android": {
         "image": "latest"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://frontend-production-8907b1e6.up.railway.app",
+        "EXPO_PUBLIC_SKIP_AUTH": "false"
       }
     }
   }

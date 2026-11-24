@@ -6,6 +6,7 @@ import { Card } from '@/components/Card';
 import { Field } from '@/components/Field';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
+import { Header } from '@/components/ui';
 import { ApiError, api } from '@/lib/api';
 import { useApi } from '@/lib/hooks';
 import type { IssueDetail } from '@/lib/types';
@@ -81,7 +82,7 @@ export default function EditIssueScreen() {
 
   if (loading && !issue) {
     return (
-      <Screen>
+      <Screen header={<Header back title="Tahrirlash" />}>
         <ActivityIndicator color={colors.primary} />
       </Screen>
     );
@@ -89,14 +90,14 @@ export default function EditIssueScreen() {
 
   if (error || !issue) {
     return (
-      <Screen>
+      <Screen header={<Header back title="Tahrirlash" />}>
         <Text style={{ color: colors.danger }}>{error ?? 'Topilmadi'}</Text>
       </Screen>
     );
   }
 
   return (
-    <Screen>
+    <Screen header={<Header back title="Tahrirlash" />}>
       <Text variant="muted">#{id}</Text>
 
       {issue.rejectedReason ? (

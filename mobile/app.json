@@ -4,20 +4,45 @@
     "slug": "mahalladosh",
     "owner": "axroroooo",
     "scheme": "mahalladosh",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "backgroundColor": "#F6F3EC",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "uz.mahalladosh.app"
     },
     "android": {
-      "package": "uz.mahalladosh.app"
+      "package": "uz.mahalladosh.app",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "monochromeImage": "./assets/adaptive-monochrome.png",
+        "backgroundColor": "#0E6B56"
+      },
+      "softwareKeyboardLayoutMode": "resize"
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 96,
+          "backgroundColor": "#F6F3EC"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Muammo rasmini biriktirish uchun galereyaga ruxsat kerak.",
+          "cameraPermission": "Muammoni suratga olish uchun kameraga ruxsat kerak.",
+          "microphonePermission": false
+        }
+      ]
     ],
     "extra": {
       "eas": {

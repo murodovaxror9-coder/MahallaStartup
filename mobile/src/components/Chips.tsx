@@ -1,42 +1,57 @@
 import { Pressable, ScrollView } from 'react-native';
+import { C, F } from '@/theme';
+import { Icon } from './Icon';
 import { Text } from './Text';
-import { useTheme } from '@/theme';
 
 interface ChipsProps {
   options: Array<{ value: string; label: string }>;
   value: string | null;
-  onChange: (value: string | null) => void;
-  /** `true` bo'lsa «Hammasi» chip'i ham chiqadi va `null` qaytadi */
+  onChange: (v: string | null) => void;
   allowAll?: boolean;
 }
 
-export function Chips({ options, value, onChange, allowAll = true }: ChipsProps) {
-  const { colors, radius, spacing } = useTheme();
-  const items = allowAll ? [{ value: '', label: 'Hammasi' }, ...options] : options;
-
+export function Chip({
+  label,
+  selected,
+  onPress,
+  dropdown,
+}: {
+  label: string;
+  selected?: boolean;
+  onPress?: () => void;
+  dropdown?: boolean;
+}) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }}>
-      {items.map((item) => {
-        const active = (value ?? '') === item.value;
-        return (
-          <Pressable
-            key={item.value || 'all'}
-            onPress={() => onChange(item.value === '' ? null : item.value)}
-            style={{
-              paddingHorizontal: spacing.md,
-              paddingVertical: 7,
-              borderRadius: radius.pill,
-              borderWidth: 1,
-              borderColor: active ? colors.primary : colors.border,
-              backgroundColor: active ? colors.primary : colors.surface,
-            }}
-          >
-            <Text variant="label" style={{ color: active ? colors.primaryText : colors.text }}>
-              {item.label}
-            </Text>
-          </Pressable>
-        );
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ selected: !!selected }}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+        height: 36,
+        paddingHorizontal: 13,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: selected ? C.primary : C.line,
+        backgroundColor: selected ? C.primarySoft : pressed ? C.surface2 : C.surface,
       })}
+    >
+      {selected && !dropdown ? <Icon name="Check" size={14} color={C.primary} strokeWidth={2.5} /> : null}
+      <Text style={{ fontSize: 13, fontFamily: F.semibold, color: selected ? C.primary : C.ink }}>{label}</Text>
+      {dropdown ? <Icon name="ChevronDown" size={14} color={selected ? C.primary : C.ink} strokeWidth={2.5} /> : null}
+    </Pressable>
+  );
+}
+
+export function Chips({ options, value, onChange, allowAll = true }: ChipsProps) {
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+      {allowAll ? <Chip label="Hammasi" selected={value === null} onPress={() => onChange(null)} /> : null}
+      {options.map((o) => (
+        <Chip key={o.value} label={o.label} selected={value === o.value} onPress={() => onChange(o.value)} />
+      ))}
     </ScrollView>
   );
 }

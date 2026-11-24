@@ -1,44 +1,56 @@
+import { useState } from 'react';
 import { TextInput, View, type TextInputProps } from 'react-native';
+import { C, F, radius } from '@/theme';
 import { Text } from './Text';
-import { useTheme } from '@/theme';
 
 interface FieldProps extends TextInputProps {
-  label: string;
+  ref?: React.Ref<React.ComponentRef<typeof TextInput>>;
+  label?: string;
   hint?: string;
   error?: string | null;
 }
 
-export function Field({ label, hint, error, multiline, style, ...props }: FieldProps) {
-  const { colors, radius, spacing } = useTheme();
+export function Field({ label, hint, error, multiline, style, onFocus, onBlur, ...props }: FieldProps) {
+  const [focused, setFocused] = useState(false);
   return (
-    <View style={{ gap: spacing.xs }}>
-      <Text variant="label">{label}</Text>
+    <View style={{ gap: 6 }}>
+      {label ? <Text variant="label">{label}</Text> : null}
       <TextInput
-        placeholderTextColor={colors.muted}
+        placeholderTextColor={C.muted}
         multiline={multiline}
+        textAlignVertical={multiline ? 'top' : 'center'}
+        aria-invalid={!!error}
+        onFocus={(e) => {
+          setFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          onBlur?.(e);
+        }}
         {...props}
         style={[
           {
-            backgroundColor: colors.surface,
-            borderColor: error ? colors.danger : colors.border,
+            minHeight: multiline ? 88 : 48,
             borderWidth: 1,
-            borderRadius: radius.sm,
-            paddingHorizontal: spacing.md,
-            paddingVertical: spacing.md,
-            color: colors.text,
-            fontSize: 15,
-            minHeight: multiline ? 96 : undefined,
-            textAlignVertical: multiline ? 'top' : 'center',
+            borderColor: error ? C.danger : focused ? C.primary : C.line,
+            borderRadius: radius.md,
+            paddingHorizontal: 14,
+            paddingVertical: multiline ? 12 : 10,
+            fontSize: 16,
+            fontFamily: F.regular,
+            color: C.ink,
+            backgroundColor: C.surface,
           },
           style,
         ]}
       />
       {error ? (
-        <Text variant="muted" style={{ color: colors.danger }}>
+        <Text variant="small" style={{ color: C.danger }}>
           {error}
         </Text>
       ) : hint ? (
-        <Text variant="muted">{hint}</Text>
+        <Text variant="small">{hint}</Text>
       ) : null}
     </View>
   );
