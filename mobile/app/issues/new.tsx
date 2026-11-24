@@ -6,19 +6,23 @@ import { Chips } from '@/components/Chips';
 import { Field } from '@/components/Field';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
-import { newKey } from '@/lib/api';
+import { ApiError, api, newKey } from '@/lib/api';
 import { CATEGORIES } from '@/lib/labels';
+import type { IssueDetail } from '@/lib/types';
+import { useTheme } from '@/theme';
 
-// API: POST /media (multipart: file, clientUploadId) -> { mediaId, kind, width, height, sizeBytes }
-//      POST /issues  (header Idempotency-Key)
+// API: POST /issues  (header Idempotency-Key)
 //        { title 5-120, description 10-2000, category, locationText 3-200, mediaIds[] (<=3 rasm, <=1 video) }
-// Rasm JPEG bo'lishi kerak (iOS HEIC -> expo-image-manipulator), video ~60 s dan oshmasin.
+// Rasm/video biriktirish: POST /media (multipart) — hali ulanmagan, keyingi bosqichda qo'shiladi.
 export default function NewIssueScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
   const [category, setCategory] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
   // Bir urinish = bitta kalit: tarmoq uzilib qayta yuborilsa dublikat yaratilmaydi
   const [idempotencyKey] = useState(newKey);
 
@@ -28,10 +32,22 @@ export default function NewIssueScreen() {
     location.trim().length >= 3 &&
     category !== null;
 
-  function submit() {
-    // TODO(api): POST /issues bilan idempotencyKey ni yuboring, keyin /issues/mine ga o'ting
-    void idempotencyKey;
-    router.back();
+  async function submit() {
+    if (!valid || !category) return;
+    setPending(true);
+    setError(null);
+    try {
+      await api<IssueDetail>('/issues', {
+        method: 'POST',
+        json: { title: title.trim(), description: description.trim(), category, locationText: location.trim(), mediaIds: [] },
+        idempotencyKey,
+      });
+      router.replace('/issues/mine');
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Kutilmagan xato yuz berdi');
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
@@ -57,8 +73,9 @@ export default function NewIssueScreen() {
         <Button title="Rasm qo'shish" variant="secondary" disabled />
       </Card>
 
+      {error ? <Text style={{ color: colors.danger }}>{error}</Text> : null}
       <Text variant="muted">Muammo moderator tasdiqlagandan keyin ovoz berishga chiqadi.</Text>
-      <Button title="Yuborish" onPress={submit} disabled={!valid} />
+      <Button title="Yuborish" onPress={submit} disabled={!valid} loading={pending} />
     </Screen>
   );
 }
