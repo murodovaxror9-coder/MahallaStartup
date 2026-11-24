@@ -1,6 +1,6 @@
 # Endpointlar
 
-Avtomatik generatsiya: `pnpm contract:build` (qo'lda tahrirlamang). Prefiks: `/api/v1`. To'liq sxemalar — `backend/openapi.yaml`, jonli hujjat — `GET /api/docs` (dev).
+Avtomatik generatsiya: `pnpm contract:build` (qo'lda tahrirlamang). Prefiks: `/api/v1`. To'liq sxemalar va misollar — `backend/openapi.yaml`, jonli Swagger — `http://localhost:3000/api/docs` (dev).
 
 `/health` (liveness) va `/ready` (DB, kesh, saqlash holati) — prefikssiz.
 

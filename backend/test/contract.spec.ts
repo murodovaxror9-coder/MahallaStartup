@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { z } from 'zod';
 import { responseSchemas } from '../src/contract/responses';
-import { buildOpenApi } from '../src/core/openapi';
+import { buildContract } from '../src/contract';
 import { toYaml } from '../src/core/yaml';
 import { allRoutes } from '../src/routes';
 import { createIssue, jpeg, openIssue, upload, world, type World } from './fixtures';
@@ -9,7 +9,7 @@ import { createTestApp, type TestApp } from './helpers';
 
 describe('API shartnomasi (OpenAPI)', () => {
   it('hamma marshrut hujjatda: takroriy operationId yo‘q, xato sxemasi va xavfsizlik bor', () => {
-    const doc = buildOpenApi(allRoutes, responseSchemas) as {
+    const doc = buildContract() as {
       paths: Record<string, Record<string, { operationId?: string; security?: unknown[] }>>;
       components: { schemas: Record<string, unknown> };
     };

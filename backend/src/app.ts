@@ -4,30 +4,13 @@ import express, { type Express } from 'express';
 import helmet from 'helmet';
 import { pinoHttp } from 'pino-http';
 import { AppError } from './common/app-error';
-import { responseSchemas } from './contract/responses';
 import type { Deps } from './core/deps';
 import { mountRoutes } from './core/http';
 import { requestContext } from './core/request-context';
-import { buildOpenApi } from './core/openapi';
 import { LocalStorage } from './core/storage';
+import { mountDocs } from './docs';
 import { errorHandler, notFoundHandler } from './middleware/errors';
 import { allRoutes } from './routes';
-
-const SWAGGER_HTML = `<!doctype html>
-<html lang="uz">
-  <head>
-    <meta charset="utf-8" />
-    <title>Mahalladosh API</title>
-    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
-  </head>
-  <body>
-    <div id="ui"></div>
-    <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
-    <script>
-      window.ui = SwaggerUIBundle({ url: '/api/openapi.json', dom_id: '#ui', deepLinking: true });
-    </script>
-  </body>
-</html>`;
 
 function parseTrustProxy(v: string): boolean | number | string {
   if (v === 'true') return true;
@@ -87,21 +70,8 @@ export function createApp(deps: Deps): Express {
     res.status(ok ? 200 : 503).json({ status: ok ? 'ok' : 'fail', checks: { db, cache, storage } });
   });
 
-  // Faqat dev: OpenAPI hujjati va Swagger UI (production'da o'chiq)
-  if (deps.env.NODE_ENV !== 'production') {
-    let doc: unknown;
-    app.get('/api/openapi.json', (_req, res) => {
-      doc ??= buildOpenApi(allRoutes, responseSchemas);
-      res.json(doc);
-    });
-    app.get('/api/docs', (_req, res) => {
-      res.setHeader(
-        'Content-Security-Policy',
-        "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https:; connect-src 'self'",
-      );
-      res.type('html').send(SWAGGER_HTML);
-    });
-  }
+  // Swagger UI (`/api/docs`) va OpenAPI (`/api/openapi.json`) — faqat dev
+  mountDocs(app, deps);
 
   const api = express.Router();
   mountRoutes(api, allRoutes, deps);
