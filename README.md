@@ -63,7 +63,7 @@ mijozlar uchun: [docs/FOR_CLIENTS.md](docs/FOR_CLIENTS.md) · qarorlar: [docs/DE
 - **Redis** (`ioredis` keshi, rate limit, Socket.IO Redis adapter) va **S3/MinIO** (presigned URL) yo'llari — o'rnatilmagani uchun sinalmadi; lokal rejimdagi muqobillari testlangan.
 - **Push**: Expo API testlarda soxtalashtirilgan (yuborish, `DeviceNotRegistered` tokenni o'chirish tekshirilgan); real qurilmada va `EXPO_ACCESS_TOKEN` bilan sinalmadi. Receipt tekshiruvi xotirada (qayta ishga tushganda yo'qoladi).
 - **Video**: o'zgartirilmay saqlanadi — metadata (GPS) tozalash va transkodlash keyingi bosqich.
-- **TZ fayli** (`MAHALLADOSH_TZ_CLAUDE.md`) repoda yo'q edi: holat yorliqlari va frontend/mobil sahifalar ro'yxati backend promptidan chiqarilgan.
+- **TZ** (`MAHALLADOSH_TZ_CLAUDE.md`) faqat sherik branch'ida (`origin/frontend/admin-panel`) bor ekan; backend yorliqlari va qoidalari unga moslandi. Mobil skeletining pastki navigatsiyasi TZ dan farq qiladi (TZ: Bosh sahifa, Muammolar, Tadbirlar, Chat, Profil) — mobil dasturchi moslashtiradi. Sherikning `apps/admin` paneli va `docs/api-contract.md` qoralamasi alohida branch'da: nomlar farqi `docs/FOR_CLIENTS.md` da.
 - Frontend/mobil API'ga to'liq ulanmagan; mobilda `EXPO_PUBLIC_SKIP_AUTH=true` (ekranlarni ko'rish uchun).
 
 ## Xato kodlari

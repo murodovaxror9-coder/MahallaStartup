@@ -23,5 +23,5 @@ Noaniq joylarda eng oqilona variant tanlanadi va shu yerga bir qatorda yoziladi.
 | 17 | TypeScript **~6.0.3**, Node ≥ 20.12 (`process.loadEnvFile`) | Expo SDK 58 TS 6 ni talab qiladi; barcha loyihalarda bir xil. `types` standart `[]` — tsconfig'larda ochiq yozilgan. |
 | 18 | Linter — oxlint, har loyihada o'z `.oxlintrc.json` | Eski Vite shabloni ham shuni ishlatgan. |
 | 19 | Eski Vite shabloni `legacy/vite-template/` ga ko'chirildi; `frontend/` — Next.js 16 | O'chirishga ruxsat berilmagan edi. Backend promptida admin Next.js (`/api/*` rewrites). Vite kerak bo'lsa `legacy/` dan boshlash mumkin. |
-| 20 | Holat yorliqlari va frontend/mobil sahifalar ro'yxati taxminiy | TZ fayli (`MAHALLADOSH_TZ_CLAUDE.md`) repoda yo'q edi; TZ 4-bo'lim jadvali bilan solishtiring. |
+| 20 | Holat yorliqlari TZ 4-bo'lim jadvaliga moslangan; muallif o'z postini avtomatik kuzatadi; g'olib bildirishnomasi tegishli postni ochadi | TZ (`MAHALLADOSH_TZ_CLAUDE.md`) sherik branch'idan olindi. |
 | 21 | Frontend: auth guard (`proxy.ts`) hozircha yo'q; mobil: `EXPO_PUBLIC_SKIP_AUTH=true` | Sahifalarni backend auth ulanguncha ko'rish uchun. |

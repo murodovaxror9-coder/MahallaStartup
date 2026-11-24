@@ -121,6 +121,11 @@ const create = route({
         maxImages: 3,
         maxVideos: 1,
       });
+      // TZ: muallif o'z postini avtomatik kuzatadi
+      await q.query(
+        'INSERT INTO issue_follows (issue_id, user_id, created_at) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING',
+        [id, user.userId, now],
+      );
       return { id, replay: false };
     });
 

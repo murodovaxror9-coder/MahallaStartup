@@ -266,7 +266,8 @@ export async function closeRound(deps: Pick<Deps, 'db'>, roundId: string, closeA
       const followers = await q.query<{ user_id: string }>('SELECT user_id FROM issue_follows WHERE issue_id = $1', [
         winnerRow.id,
       ]);
-      const common = { mahallaId: round.mahalla_id, type: 'ROUND_WINNER' as const, entityType: 'ROUND' as const, entityId: roundId, dedupeKey };
+      // Bildirishnoma tegishli POST sahifasini ochadi (TZ); g'olib yo'q bo'lsa davr natijasi
+      const common = { mahallaId: round.mahalla_id, type: 'ROUND_WINNER' as const, entityType: 'ISSUE' as const, entityId: winnerRow.id, dedupeKey };
       // Avval muallif (maxsus matn), keyin kuzatuvchilar va ovoz berganlar: har kimga bitta bildirishnoma
       await notify(q, {
         ...common,

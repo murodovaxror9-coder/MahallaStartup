@@ -6,13 +6,13 @@ import { CATEGORY_LABELS, type Category, type IssueStatus } from '../../core/typ
 export const MEDIA_URL_TTL_SEC = 300;
 
 export const STATUS_LABELS: Record<IssueStatus, string> = {
-  PENDING_REVIEW: "Ko'rib chiqilmoqda",
+  PENDING_REVIEW: 'Moderatsiyada',
   OPEN: 'Ochiq',
-  REJECTED: 'Rad etilgan',
+  REJECTED: 'Tuzatish kerak',
   MERGED: 'Birlashtirilgan',
-  SELECTED: 'Tanlangan',
+  SELECTED: 'Oylik ovozda tanlandi',
   IN_PROGRESS: 'Jarayonda',
-  REFERRED: 'Tashkilotga yuborilgan',
+  REFERRED: 'Tashkilotdan javob kutilmoqda',
   RESOLVED: 'Hal qilingan',
 };
 

@@ -1,13 +1,13 @@
-// O'zbekcha yorliqlar. TZ 4-bo'lim jadvali bilan solishtirib yakuniy matnlarni tasdiqlang.
+// O'zbekcha yorliqlar: TZ 4-bo'lim jadvali («Aholi ko'radigan yozuv»).
 
 export const ISSUE_STATUS_LABELS: Record<string, string> = {
-  PENDING_REVIEW: "Ko'rib chiqilmoqda",
+  PENDING_REVIEW: 'Moderatsiyada',
   OPEN: 'Ovoz berilmoqda',
-  REJECTED: 'Rad etilgan',
+  REJECTED: 'Tuzatish kerak',
   MERGED: 'Birlashtirilgan',
-  SELECTED: 'Tanlangan',
+  SELECTED: 'Oylik ovozda tanlandi',
   IN_PROGRESS: 'Jarayonda',
-  REFERRED: 'Tashkilotga yuborilgan',
+  REFERRED: 'Tashkilotdan javob kutilmoqda',
   RESOLVED: 'Hal qilingan',
 };
 

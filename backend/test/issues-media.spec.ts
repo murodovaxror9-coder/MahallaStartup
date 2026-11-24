@@ -72,6 +72,7 @@ describe('post va media', () => {
     const first = await createIssue(t, author(), { key: k, mediaIds: [a.body.mediaId] });
     const replay = await createIssue(t, author(), { key: k, mediaIds: [a.body.mediaId] });
     expect(first.status).toBe(201);
+    expect(first.body.isFollowing).toBe(true); // TZ: muallif o'z postini avtomatik kuzatadi
     expect(replay.status).toBe(200);
     expect(replay.body.id).toBe(first.body.id);
     expect((await t.db.query('SELECT 1 FROM issues')).rows).toHaveLength(1);
@@ -163,7 +164,7 @@ describe('post va media', () => {
     expect(rejected.body.status).toBe('REJECTED');
 
     const mine = await t.req('GET', '/api/v1/issues/mine', { token: author().token });
-    expect(mine.body.items[0]).toMatchObject({ status: 'REJECTED', rejectedReason: "Aniq manzil ko'rsatilmagan", statusLabel: 'Rad etilgan' });
+    expect(mine.body.items[0]).toMatchObject({ status: 'REJECTED', rejectedReason: "Aniq manzil ko'rsatilmagan", statusLabel: 'Tuzatish kerak' });
     const note = await t.db.query<{ type: string; body: string }>('SELECT type, body FROM notifications WHERE user_id = $1', [author().id]);
     expect(note.rows[0]).toMatchObject({ type: 'ISSUE_REJECTED' });
     expect(note.rows[0]!.body).toContain("Aniq manzil ko'rsatilmagan");
