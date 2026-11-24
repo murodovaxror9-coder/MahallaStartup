@@ -13,11 +13,12 @@
     "start": "next start -p 3001",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint -c .oxlintrc.json app components lib",
-    "test": "echo \"frontend: testlar hali yo'q\"",
+    "test": "node --test lib/*.test.ts",
     "api:types": "openapi-typescript ../backend/openapi.yaml -o lib/api-schema.d.ts",
     "api:mock": "pnpm dlx @stoplight/prism-cli@5.16.0 mock -p 4010 -h 0.0.0.0 ../backend/openapi.yaml"
   },
   "dependencies": {
+    "lucide-react": "^1.79.0",
     "next": "^16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
