@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Mahalladosh",
+    "slug": "mahalladosh",
+    "scheme": "mahalladosh",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "uz.mahalladosh.app"
+    },
+    "android": {
+      "package": "uz.mahalladosh.app"
+    },
+    "plugins": ["expo-router", "expo-secure-store"]
+  }
+}

@@ -1,23 +1,13 @@
 {
-  "name": "mahalla-startup",
+  "name": "mahalladosh",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "description": "Mahalladosh: backend/, frontend/ va mobile/ alohida loyihalar. Har biri o'z papkasida mustaqil o'rnatiladi.",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
-  },
-  "devDependencies": {
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^6.1.2",
-    "oxlint": "^1.90.0",
-    "vite": "^8.3.6"
+    "install:all": "pnpm --dir backend install && pnpm --dir frontend install && pnpm --dir mobile install",
+    "infra:up": "pnpm --dir backend infra:up",
+    "infra:down": "pnpm --dir backend infra:down",
+    "dev:backend": "pnpm --dir backend dev",
+    "dev:frontend": "pnpm --dir frontend dev",
+    "dev:mobile": "pnpm --dir mobile start"
   }
 }

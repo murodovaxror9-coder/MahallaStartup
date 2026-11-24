@@ -1,0 +1,243 @@
+import { z } from 'zod';
+import { dt, page, uuid } from '../core/schemas';
+import { userSchema } from '../modules/auth/routes';
+import { issueListItemSchema, mediaSchema } from '../modules/issues/dto';
+
+/**
+ * Javob sxemalari: OpenAPI hujjati (`pnpm contract:build`) va `test/contract.spec.ts` uchun.
+ * Testlar haqiqiy javoblarni shu sxemalar bilan tekshiradi — hujjat kodga mos bo'lib qoladi.
+ * Kalit: `METHOD /yo'l` (marshrutdagi shaklda, masalan `GET /issues/:id`).
+ */
+const mahalla = z.object({ id: uuid, name: z.string(), slug: z.string() });
+const nullableDt = dt.nullable();
+
+export const issueDetailSchema = z.object({
+  id: uuid,
+  title: z.string(),
+  category: z.string(),
+  categoryLabel: z.string(),
+  status: z.string(),
+  statusLabel: z.string(),
+  hidden: z.boolean(),
+  hiddenNotice: z.string().optional().describe("Muallif o'z yashirilgan postini ko'rganda faqat shu belgi keladi (media/tarixsiz)"),
+  author: z.object({ id: uuid, displayName: z.string() }),
+  createdAt: dt,
+  publishedAt: nullableDt,
+  description: z.string().optional(),
+  locationText: z.string().optional(),
+  media: z.array(mediaSchema).optional().describe('5 daqiqalik imzoli URL’lar'),
+  voteCount: z.number().int().nullable().optional(),
+  roundId: uuid.nullable().optional(),
+  myVote: z.boolean().optional(),
+  isFollowing: z.boolean().optional(),
+  canVote: z.boolean().optional(),
+  commentCount: z.number().int().optional(),
+  duplicateOf: z.object({ id: uuid, title: z.string() }).nullable().optional(),
+  rejectedReason: z.string().nullable().optional(),
+  responsible: z.string().nullable().optional(),
+  nextStep: z.string().nullable().optional(),
+  dueDate: z.string().nullable().optional().describe('YYYY-MM-DD'),
+  referredOrg: z.string().nullable().optional(),
+  referredAt: z.string().nullable().optional(),
+  followUpAt: z.string().nullable().optional(),
+  resolutionText: z.string().nullable().optional(),
+  hiddenReason: z.string().nullable().optional(),
+  history: z
+    .array(
+      z.object({
+        id: uuid,
+        type: z.enum(['STATUS_CHANGE', 'DETAILS_CHANGE', 'AUTHOR_FEEDBACK', 'CARRY_OVER']),
+        fromStatus: z.string().nullable(),
+        toStatus: z.string().nullable(),
+        reason: z.string().nullable(),
+        payload: z.record(z.string(), z.unknown()),
+        createdAt: dt,
+        actorName: z.string().nullable().describe('Faqat admin ko‘rinishida'),
+        media: z.array(mediaSchema),
+      }),
+    )
+    .optional(),
+});
+
+const comment = z.object({ id: uuid, text: z.string(), authorId: uuid, authorName: z.string(), createdAt: dt, hidden: z.boolean().optional() });
+const voteState = z.object({ issueId: uuid, voted: z.boolean(), slot: z.number().int().nullable(), votesUsed: z.number().int(), votesLeft: z.number().int() });
+const ranked = z.object({ issueId: uuid, title: z.string(), votes: z.number().int(), rank: z.number().int() });
+const roundResult = z.object({
+  roundId: uuid,
+  periodStart: dt,
+  periodEnd: dt,
+  closedAt: dt,
+  winner: ranked.nullable(),
+  ranking: z.array(ranked),
+  totalVoters: z.number().int(),
+  totalVotes: z.number().int(),
+  message: z.string(),
+});
+const roundListItem = z.object({
+  id: uuid,
+  periodStart: dt,
+  periodEnd: dt,
+  status: z.enum(['OPEN', 'CLOSED']),
+  winner: z.object({ issueId: uuid, title: z.string(), votes: z.number().int() }).nullable(),
+  totalVoters: z.number().int().nullable(),
+  totalVotes: z.number().int().nullable(),
+});
+const chatMessage = z.object({ id: uuid, text: z.string(), senderId: uuid, senderName: z.string(), mine: z.boolean(), createdAt: dt });
+const event = z.object({
+  id: uuid,
+  title: z.string(),
+  description: z.string(),
+  startsAt: dt,
+  endsAt: nullableDt,
+  location: z.string(),
+  organizer: z.string(),
+  status: z.enum(['DRAFT', 'PUBLISHED', 'CANCELLED', 'COMPLETED']),
+  version: z.number().int(),
+  resultText: z.string().nullable(),
+  rsvpCount: z.number().int(),
+  myRsvp: z.boolean(),
+  createdAt: dt,
+  media: z.array(mediaSchema).optional(),
+});
+const announcement = z.object({
+  id: uuid,
+  title: z.string(),
+  body: z.string(),
+  isImportant: z.boolean(),
+  status: z.enum(['DRAFT', 'PUBLISHED']),
+  publishedAt: nullableDt,
+  createdAt: dt,
+});
+const notification = z.object({
+  id: uuid,
+  type: z.string(),
+  title: z.string(),
+  body: z.string(),
+  entityType: z.enum(['ISSUE', 'EVENT', 'ANNOUNCEMENT', 'ROUND']),
+  entityId: uuid,
+  read: z.boolean(),
+  readAt: nullableDt,
+  createdAt: dt,
+});
+const report = z.object({
+  id: uuid,
+  targetType: z.enum(['POST', 'COMMENT', 'CHAT_MESSAGE']),
+  targetId: uuid,
+  reason: z.string(),
+  status: z.enum(['OPEN', 'ACTIONED', 'DISMISSED']),
+  resolution: z.string().nullable(),
+  createdAt: dt,
+  resolvedAt: nullableDt,
+});
+const resident = z.object({
+  id: uuid,
+  login: z.string(),
+  displayName: z.string(),
+  phone: z.string().nullable(),
+  status: z.enum(['ACTIVE', 'BLOCKED']),
+  blockedReason: z.string().nullable(),
+  mustChangePassword: z.boolean(),
+  tempPasswordExpiresAt: nullableDt,
+  createdAt: dt,
+});
+
+export const responseSchemas: Record<string, z.ZodType> = {
+  'POST /auth/login': z.object({ token: z.string().optional().describe('Faqat mobil (client=mobile)'), user: userSchema, mustChangePassword: z.boolean() }),
+  'GET /me': z.object({ user: userSchema, mahalla, role: z.enum(['RESIDENT', 'MAHALLA_ADMIN']), mustChangePassword: z.boolean(), unreadNotifications: z.number().int() }),
+  'GET /home': z.object({
+    round: z.object({ periodEnd: dt, votesLeft: z.number().int() }),
+    featuredIssue: z.object({ id: uuid, title: z.string(), status: z.string(), statusLabel: z.string() }).nullable(),
+    nextEvent: z.object({ id: uuid, title: z.string(), startsAt: dt, location: z.string() }).nullable(),
+    latestImportantAnnouncement: z.object({ id: uuid, title: z.string(), publishedAt: nullableDt }).nullable(),
+    unreadNotifications: z.number().int(),
+  }),
+  'GET /categories': z.object({ items: z.array(z.object({ value: z.string(), label: z.string() })) }),
+  'GET /issues': page(issueListItemSchema),
+  'GET /issues/mine': page(issueListItemSchema),
+  'POST /issues': issueDetailSchema,
+  'GET /issues/:id': issueDetailSchema,
+  'PATCH /issues/:id': issueDetailSchema,
+  'POST /issues/:id/resubmit': issueDetailSchema,
+  'POST /issues/:id/feedback': z.object({ id: uuid, issueId: uuid, type: z.enum(['CONFIRMED', 'STILL_ONGOING']), comment: z.string(), createdAt: dt }),
+  'GET /issues/:id/comments': page(comment),
+  'POST /issues/:id/comments': comment,
+  'PUT /issues/:id/vote': voteState,
+  'GET /rounds/current': z.object({
+    round: z.object({ id: uuid, status: z.enum(['OPEN', 'CLOSED']), periodStart: dt, periodEnd: dt }),
+    periodStart: dt,
+    periodEnd: dt,
+    votesUsed: z.number().int(),
+    votesLeft: z.number().int(),
+    myVotes: z.array(z.object({ issueId: uuid, title: z.string(), slot: z.number().int() })),
+  }),
+  'GET /rounds': page(roundListItem),
+  'GET /rounds/:id/result': roundResult,
+  'GET /admin/rounds': page(roundListItem),
+  'GET /admin/rounds/:id/result': roundResult,
+  'POST /media': z.object({ mediaId: uuid, kind: z.enum(['IMAGE', 'VIDEO']), width: z.number().int().nullable(), height: z.number().int().nullable(), sizeBytes: z.number().int() }),
+  'GET /media/:id/url': z.object({ url: z.string(), thumbUrl: z.string().nullable(), expiresAt: dt }),
+  'GET /chat/messages': z.object({ items: z.array(chatMessage), nextCursor: uuid.nullable() }),
+  'POST /chat/messages': chatMessage,
+  'POST /reports': report,
+  'GET /events': page(event),
+  'GET /events/:id': event,
+  'PUT /events/:id/rsvp': z.object({ going: z.boolean(), rsvpCount: z.number().int() }),
+  'GET /announcements': page(announcement),
+  'GET /announcements/:id': announcement,
+  'GET /notifications': page(notification),
+  'GET /notifications/unread-count': z.object({ count: z.number().int() }),
+  'GET /admin/dashboard': z.object({
+    round: z.object({ id: uuid, periodStart: dt, periodEnd: dt, status: z.enum(['OPEN', 'CLOSED']) }),
+    activeVoters: z.number().int(),
+    totalResidents: z.number().int(),
+    pendingModeration: z.number().int(),
+    overdueIssues: z.number().int(),
+    openReports: z.number().int(),
+    nextEvent: z.object({ id: uuid, title: z.string(), startsAt: dt, location: z.string(), rsvpCount: z.number().int() }).nullable(),
+  }),
+  'GET /admin/moderation/queue': page(issueListItemSchema),
+  'GET /admin/issues': page(issueListItemSchema),
+  'GET /admin/issues/:id': issueDetailSchema,
+  'POST /admin/issues/:id/approve': issueDetailSchema,
+  'POST /admin/issues/:id/reject': issueDetailSchema,
+  'POST /admin/issues/:id/merge': issueDetailSchema,
+  'POST /admin/issues/:id/transition': issueDetailSchema,
+  'PATCH /admin/issues/:id/work': issueDetailSchema,
+  'POST /admin/issues/:id/carry-over': issueDetailSchema,
+  'GET /admin/residents': page(resident),
+  'GET /admin/residents/:id': resident,
+  'POST /admin/residents': z.object({ user: resident, temporaryPassword: z.string().describe('Faqat BIR MARTA qaytadi'), expiresAt: dt }),
+  'POST /admin/residents/:id/reset-password': z.object({ temporaryPassword: z.string(), expiresAt: dt }),
+  'POST /admin/residents/:id/block': resident,
+  'POST /admin/residents/:id/unblock': resident,
+  'GET /admin/reports': page(report.extend({ reporterName: z.string(), contentPreview: z.string().nullable(), contentHidden: z.boolean() })),
+  'POST /admin/reports/:id/hide': z.object({ id: uuid, status: z.literal('ACTIONED') }),
+  'POST /admin/reports/:id/dismiss': z.object({ id: uuid, status: z.literal('DISMISSED') }),
+  'GET /admin/events': page(event),
+  'POST /admin/events': event,
+  'PATCH /admin/events/:id': event,
+  'POST /admin/events/:id/publish': event,
+  'POST /admin/events/:id/cancel': event,
+  'POST /admin/events/:id/complete': event,
+  'GET /admin/events/:id/attendees': z.object({
+    items: z.array(z.object({ id: uuid, login: z.string(), displayName: z.string(), phone: z.string().nullable(), rsvpAt: dt })),
+    total: z.number().int(),
+  }),
+  'POST /admin/announcements': announcement,
+  'PATCH /admin/announcements/:id': announcement,
+  'POST /admin/announcements/:id/publish': announcement,
+  'GET /admin/audit': page(
+    z.object({
+      id: uuid,
+      action: z.string(),
+      actorId: uuid.nullable(),
+      actorName: z.string().nullable(),
+      targetType: z.string(),
+      targetId: z.string().nullable(),
+      reason: z.string().nullable(),
+      meta: z.record(z.string(), z.unknown()),
+      ip: z.string().nullable(),
+      createdAt: dt,
+    }),
+  ),
+};
