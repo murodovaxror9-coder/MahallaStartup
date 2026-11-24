@@ -1,0 +1,8 @@
+{
+  "plugins": ["typescript", "react"],
+  "categories": { "correctness": "error" },
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]
+  },
+  "ignorePatterns": ["**/dist/**", "**/.next/**", "**/.expo/**", "**/generated/**", "**/*.d.ts", "legacy/**"]
+}
