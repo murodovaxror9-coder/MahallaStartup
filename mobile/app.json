@@ -2,6 +2,7 @@
   "expo": {
     "name": "Mahalladosh",
     "slug": "mahalladosh",
+    "owner": "axroroooo",
     "scheme": "mahalladosh",
     "version": "0.1.0",
     "orientation": "portrait",
@@ -14,6 +15,14 @@
     "android": {
       "package": "uz.mahalladosh.app"
     },
-    "plugins": ["expo-router", "expo-secure-store"]
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "a771eb8e-275f-45a3-b998-b86fa1b9cf00"
+      }
+    }
   }
 }
